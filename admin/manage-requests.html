@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Requests - UBBDMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+           <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body { background: #f4f6f9; }
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .sidebar {
+            background: #2c3e50;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #bdc3c7;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 2px 10px;
+        }
+        .sidebar a:hover { background: #c0392b; color: white; }
+        .sidebar a.active { background: #c0392b; color: white; }
+        .main-content { padding: 20px; }
+        .blood-badge {
+            background: #c0392b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .section-title {
+            color: #c0392b;
+            border-bottom: 2px solid #c0392b;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAVBAR -->
+<nav class="navbar" style="background-color: #c0392b;">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold">
+            🩸 UBBDMS Admin Panel
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white" id="adminNameNav">Admin</span>
+            <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+                Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+
+ <!-- SIDEBAR -->
+<div class="sidebar" style="width: 220px; flex-shrink: 0;">
+    <a href="admin-dashboard.html">📊 Dashboard</a>
+    <a href="manage-donors.html">👥 Manage Donors</a>
+    <a href="manage-requests.html" class="active">🩸 Manage Requests</a>
+    <a href="send-notification.html">📢 Send Notification</a>
+</div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1 main-content">
+
+        <h4 class="mb-4">🩸 Manage Blood Requests</h4>
+
+        <!-- STATS ROW -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #c0392b;">
+                    <h3 id="totalCount">0</h3>
+                    <p class="mb-0 text-muted">Total Requests</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #f39c12;">
+                    <h3 id="pendingCount">0</h3>
+                    <p class="mb-0 text-muted">Pending</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #27ae60;">
+                    <h3 id="fulfilledCount">0</h3>
+                    <p class="mb-0 text-muted">Fulfilled</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #2980b9;">
+                    <h3 id="shownCount">0</h3>
+                    <p class="mb-0 text-muted">Showing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH & FILTER -->
+        <div class="card p-4 shadow mb-4">
+            <h5 class="section-title">🔍 Search & Filter</h5>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <label>Blood Group</label>
+                    <select class="form-control" id="filterBloodGroup">
+                        <option value="">All Blood Groups</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label>Status</label>
+                    <select class="form-control" id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Fulfilled">Fulfilled</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2 d-flex align-items-end">
+                    <button class="btn btn-danger w-100"
+                        onclick="searchRequests()">
+                        🔍 Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REQUESTS TABLE -->
+        <div class="card p-4 shadow">
+            <h5 class="section-title">📋 All Blood Requests</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Blood Group</th>
+                            <th>Hospital</th>
+                            <th>Location</th>
+                            <th>Contact</th>
+                            <th>Posted By</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- REQUEST DETAIL MODAL -->
+<div class="modal fade" id="requestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#c0392b; color:white;">
+                <h5 class="modal-title">🩸 Request Details</h5>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="requestModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Check admin login
+const adminToken = localStorage.getItem("adminToken");
+if (!adminToken) {
+    alert("Please login as admin!");
+    window.location.href = "admin-login.html";
+}
+
+document.getElementById("adminNameNav").textContent =
+    localStorage.getItem("adminName") || "Admin";
+
+let allRequests = [];
+
+// LOAD ALL REQUESTS
+async function loadRequests() {
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/admin/requests", {
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const requests = await response.json();
+        allRequests = requests;
+        displayRequests(requests);
+        updateCounts(requests);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// SEARCH REQUESTS
+async function searchRequests() {
+    const blood_group = document.getElementById("filterBloodGroup").value;
+    const status = document.getElementById("filterStatus").value;
+
+    let url = "https://blood-bank-backend-xwde.onrender.com/api/admin/requests/search?";
+    if (blood_group) url += "blood_group=" + encodeURIComponent(blood_group) + "&";
+    if (status) url += "status=" + encodeURIComponent(status);
+
+    try {
+        const response = await fetch(url, {
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const requests = await response.json();
+        displayRequests(requests);
+        document.getElementById("shownCount").textContent = requests.length;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// UPDATE COUNTS
+function updateCounts(requests) {
+    const pending = requests.filter(r => r.request_status === "Pending").length;
+    const fulfilled = requests.filter(r => r.request_status === "Fulfilled").length;
+    document.getElementById("totalCount").textContent = requests.length;
+    document.getElementById("pendingCount").textContent = pending;
+    document.getElementById("fulfilledCount").textContent = fulfilled;
+    document.getElementById("shownCount").textContent = requests.length;
+}
+
+// GET STATUS BADGE
+function getStatusBadge(status) {
+    if (status === "Pending")
+        return '<span class="badge bg-warning text-dark">⏳ Pending</span>';
+    if (status === "Fulfilled")
+        return '<span class="badge bg-success">✅ Fulfilled</span>';
+    if (status === "Cancelled")
+        return '<span class="badge bg-danger">❌ Cancelled</span>';
+    return '<span class="badge bg-secondary">' + status + '</span>';
+}
+
+// DISPLAY REQUESTS
+function displayRequests(requests) {
+    const tbody = document.getElementById("requestTableBody");
+
+    if (requests.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center text-muted">
+                    No requests found
+                </td>
+            </tr>`;
+        return;
+    }
+
+    tbody.innerHTML = requests.map((req, index) => {
+        const date = new Date(req.request_date).toLocaleDateString();
+        return `
+        <tr>
+            <td>${index + 1}</td>
+            <td>
+                <a href="#" onclick="viewRequest(${req.request_id})"
+                    style="color:#c0392b;">
+                    ${req.patient_name}
+                </a>
+            </td>
+            <td>
+                <span class="blood-badge">${req.blood_group}</span>
+            </td>
+            <td>${req.hospital_name}</td>
+            <td>${req.location}</td>
+            <td>${req.contact_number}</td>
+            <td>${req.donor_name || "Anonymous"}</td>
+            <td>${date}</td>
+            <td>${getStatusBadge(req.request_status)}</td>
+            <td>
+                <div class="d-flex gap-1">
+                    <select class="form-select form-select-sm"
+                        style="width: 120px;"
+                        onchange="updateStatus(${req.request_id}, this.value)">
+                        <option value="Pending"
+                            ${req.request_status === "Pending" ? "selected" : ""}>
+                            Pending
+                        </option>
+                        <option value="Fulfilled"
+                            ${req.request_status === "Fulfilled" ? "selected" : ""}>
+                            Fulfilled
+                        </option>
+                        <option value="Cancelled"
+                            ${req.request_status === "Cancelled" ? "selected" : ""}>
+                            Cancelled
+                        </option>
+                    </select>
+                    <button class="btn btn-sm btn-danger"
+                        onclick="deleteRequest(${req.request_id})">
+                        🗑️
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+// VIEW REQUEST DETAILS
+function viewRequest(id) {
+    const req = allRequests.find(r => r.request_id === id);
+    if (!req) return;
+
+    const date = new Date(req.request_date).toLocaleDateString();
+
+    document.getElementById("requestModalBody").innerHTML = `
+        <table class="table">
+            <tr>
+                <td><strong>Patient Name</strong></td>
+                <td>${req.patient_name}</td>
+            </tr>
+            <tr>
+                <td><strong>Blood Group</strong></td>
+                <td>
+                    <span class="blood-badge">${req.blood_group}</span>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Hospital</strong></td>
+                <td>${req.hospital_name}</td>
+            </tr>
+            <tr>
+                <td><strong>Location</strong></td>
+                <td>${req.location}</td>
+            </tr>
+            <tr>
+                <td><strong>Contact</strong></td>
+                <td>${req.contact_number}</td>
+            </tr>
+            <tr>
+                <td><strong>Posted By</strong></td>
+                <td>${req.donor_name || "Anonymous"}</td>
+            </tr>
+            <tr>
+                <td><strong>Date</strong></td>
+                <td>${date}</td>
+            </tr>
+            <tr>
+                <td><strong>Status</strong></td>
+                <td>${getStatusBadge(req.request_status)}</td>
+            </tr>
+        </table>`;
+
+    new bootstrap.Modal(document.getElementById("requestModal")).show();
+}
+
+// UPDATE REQUEST STATUS
+async function updateStatus(id, status) {
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/admin/request/status/" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + adminToken
+            },
+            body: JSON.stringify({ status })
+        });
+        const data = await response.json();
+        alert(data.message);
+        loadRequests();
+    } catch (error) {
+        alert("Error updating request");
+    }
+}
+
+// DELETE REQUEST
+async function deleteRequest(id) {
+    if (!confirm("Delete this request? This cannot be undone!")) return;
+
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/admin/request/delete/" + id, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const data = await response.json();
+        alert(data.message);
+        loadRequests();
+    } catch (error) {
+        alert("Error deleting request");
+    }
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.clear();
+    window.location.href = "admin-login.html";
+});
+
+// Load on start
+loadRequests();
+</script>
+
+</body>
+</html>

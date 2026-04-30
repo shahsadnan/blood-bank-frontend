@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donor Dashboard - UBBDMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .blood-badge {
+            font-size: 2rem;
+            background: #c0392b;
+            color: white;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-card {
+            border-left: 4px solid #c0392b;
+        }
+        .eligible { color: green; font-weight: bold; }
+        .not-eligible { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg" style="background-color: #c0392b;">
+    <div class="container">
+        <a class="navbar-brand" href="#">🩸 UBBDMS</a>
+        <button class="navbar-toggler" type="button" 
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link text-white" 
+                        href="donor-dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" 
+                        href="search-donor.html">Search Donors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" 
+                        href="blood-request.html">Blood Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" 
+                        href="donation-history.html">My History</a>
+                </li>
+                <!-- NOTIFICATION BELL -->
+                <li class="nav-item">
+                    <a class="nav-link text-white position-relative"
+                        href="notifications.html">
+                        🔔
+                        <span id="notifBadge"
+                            class="position-absolute top-0 start-100
+                            translate-middle badge rounded-pill 
+                            bg-warning text-dark"
+                            style="display:none; font-size:0.7rem;">
+                            0
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" 
+                        href="#" id="logoutBtn">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- DASHBOARD CONTENT -->
+<div class="container mt-4">
+
+    <!-- Welcome Section -->
+    <div class="card p-4 shadow mb-4 stat-card">
+        <div class="d-flex align-items-center gap-3">
+            <div class="blood-badge" id="bloodBadge">?</div>
+            <div>
+                <h3 id="welcomeName">Welcome!</h3>
+                <p class="mb-0 text-muted" id="donorDept">Department: -</p>
+                <p class="mb-0 text-muted" id="donorEmail">Email: -</p>
+                <p class="mb-0 text-muted" id="donorPhone">Phone: -</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow stat-card">
+                <h6 class="text-muted">Blood Group</h6>
+                <h4 id="statBloodGroup">-</h4>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow stat-card">
+                <h6 class="text-muted">Last Donation</h6>
+                <h4 id="statLastDonation">-</h4>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 shadow stat-card">
+                <h6 class="text-muted">Eligibility Status</h6>
+                <h4 id="statEligibility">-</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card p-4 shadow mb-4">
+        <h5 class="mb-3">Quick Actions</h5>
+        <div class="row">
+            <div class="col-md-3 mb-2">
+                <a href="search-donor.html" class="btn btn-danger w-100">
+                    🔍 Search Donors
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="blood-request.html" 
+                    class="btn btn-outline-danger w-100">
+                    🩸 Post Blood Request
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="donation-history.html" 
+                    class="btn btn-outline-danger w-100">
+                    📋 My Donations
+                </a>
+            </div>
+            <div class="col-md-3 mb-2">
+                <a href="notifications.html" 
+                    class="btn btn-outline-danger w-100">
+                    🔔 Notifications
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Check if logged in
+const token = localStorage.getItem("token");
+if (!token) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+}
+
+// Load donor profile
+async function loadProfile() {
+    try {
+        const response = await fetch("https://blood-bank-backend-xwde.onrender.com/api/auth/profile", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const donor = await response.json();
+
+        if (!response.ok) {
+            alert("Session expired. Please login again.");
+            localStorage.clear();
+            window.location.href = "login.html";
+            return;
+        }
+
+        // Fill profile info
+        document.getElementById("welcomeName").textContent = 
+            "Welcome, " + donor.name + "!";
+        document.getElementById("donorDept").textContent = 
+            "Department: " + (donor.department || "N/A");
+        document.getElementById("donorEmail").textContent = 
+            "Email: " + donor.email;
+        document.getElementById("donorPhone").textContent = 
+            "Phone: " + donor.phone;
+        document.getElementById("bloodBadge").textContent = 
+            donor.blood_group;
+        document.getElementById("statBloodGroup").textContent = 
+            donor.blood_group;
+
+        // Last donation
+        if (donor.last_donation_date) {
+            const date = new Date(donor.last_donation_date)
+                .toLocaleDateString();
+            document.getElementById("statLastDonation").textContent = date;
+
+            // Eligibility check (must wait 90 days)
+            const lastDate = new Date(donor.last_donation_date);
+            const today = new Date();
+            const diffDays = Math.floor(
+                (today - lastDate) / (1000 * 60 * 60 * 24)
+            );
+
+            if (diffDays >= 90) {
+                document.getElementById("statEligibility").innerHTML =
+                    '<span class="eligible">✅ Eligible</span>';
+            } else {
+                const daysLeft = 90 - diffDays;
+                document.getElementById("statEligibility").innerHTML =
+                    `<span class="not-eligible">❌ ${daysLeft} days left</span>`;
+            }
+        } else {
+            document.getElementById("statLastDonation").textContent = 
+                "No donation yet";
+            document.getElementById("statEligibility").innerHTML =
+                '<span class="eligible">✅ Eligible</span>';
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// LOAD UNREAD NOTIFICATION COUNT
+async function loadUnreadCount() {
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/notification/unread-count", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await response.json();
+
+        if (data.count > 0) {
+            const badge = document.getElementById("notifBadge");
+            badge.style.display = "block";
+            badge.textContent = data.count;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.clear();
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+});
+
+// Load on page start
+loadProfile();
+loadUnreadCount();
+</script>
+
+</body>
+</html>

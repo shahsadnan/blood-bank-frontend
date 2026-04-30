@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications - UBBDMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .notif-card {
+            border-left: 4px solid #c0392b;
+            transition: transform 0.2s;
+        }
+        .notif-card:hover { transform: translateY(-2px); }
+        .notif-unread { background: #fff5f5; }
+        .notif-read { background: white; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg" style="background-color: #c0392b;">
+    <div class="container">
+        <a class="navbar-brand" href="#">🩸 UBBDMS</a>
+        <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="donor-dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="search-donor.html">Search Donors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="blood-request.html">Blood Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="donation-history.html">My History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="notifications.html">🔔 Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#" id="logoutBtn">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 style="color:#c0392b;">🔔 My Notifications</h4>
+        <button class="btn btn-outline-danger btn-sm" onclick="markAllRead()">
+            ✅ Mark All as Read
+        </button>
+    </div>
+
+    <div id="notifCount" class="mb-3 text-muted"></div>
+
+    <div id="notifList">
+        <div class="text-center text-muted mt-4">
+            <p>Loading notifications...</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+}
+
+let allNotifs = [];
+
+// LOAD NOTIFICATIONS
+async function loadNotifications() {
+    try {
+        const response = await fetch("https://blood-bank-backend-xwde.onrender.com/api/notification/my", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const notifs = await response.json();
+        allNotifs = notifs;
+        displayNotifications(notifs);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// DISPLAY NOTIFICATIONS
+function displayNotifications(notifs) {
+    const container = document.getElementById("notifList");
+    const countEl = document.getElementById("notifCount");
+
+    const unread = notifs.filter(n => !n.is_read).length;
+    countEl.textContent = notifs.length + " notification(s) — " + unread + " unread";
+
+    if (notifs.length === 0) {
+        container.innerHTML = `
+            <div class="card p-4 text-center text-muted">
+                <h5>🔔 No notifications yet</h5>
+                <p>You will receive notifications from admin here</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = notifs.map(notif => {
+        const date = new Date(notif.created_at).toLocaleString();
+        const cardClass = notif.is_read ? "notif-read" : "notif-unread";
+        const unreadDot = !notif.is_read ?
+            '<span class="badge bg-danger ms-2">New</span>' : "";
+
+        return `
+        <div class="card p-3 shadow mb-3 notif-card ${cardClass}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="mb-1">
+                        🔔 ${notif.title} ${unreadDot}
+                    </h5>
+                    <p class="mb-1">${notif.message}</p>
+                    <small class="text-muted">📅 ${date}</small>
+                </div>
+                ${!notif.is_read ? `
+                <button class="btn btn-sm btn-outline-success"
+                    onclick="markRead(${notif.notification_id})">
+                    ✅ Mark Read
+                </button>` : `
+                <span class="text-muted">✅ Read</span>`}
+            </div>
+        </div>`;
+    }).join("");
+}
+
+// MARK AS READ
+async function markRead(id) {
+    try {
+        await fetch("https://blood-bank-backend-xwde.onrender.com/api/notification/read/" + id, {
+            method: "PUT",
+            headers: { "Authorization": "Bearer " + token }
+        });
+        loadNotifications();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// MARK ALL AS READ
+async function markAllRead() {
+    const unread = allNotifs.filter(n => !n.is_read);
+    for (const notif of unread) {
+        await markRead(notif.notification_id);
+    }
+    alert("All notifications marked as read!");
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.clear();
+    window.location.href = "login.html";
+});
+
+loadNotifications();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Donors - UBBDMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body { background: #f4f6f9; }
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .sidebar {
+            background: #2c3e50;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #bdc3c7;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 2px 10px;
+        }
+        .sidebar a:hover { background: #c0392b; color: white; }
+        .sidebar a.active { background: #c0392b; color: white; }
+        .main-content { padding: 20px; }
+        .blood-badge {
+            background: #c0392b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .section-title {
+            color: #c0392b;
+            border-bottom: 2px solid #c0392b;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAVBAR -->
+<nav class="navbar" style="background-color: #c0392b;">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold">
+            🩸 UBBDMS Admin Panel
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white" id="adminNameNav">Admin</span>
+            <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+                Logout
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" style="width: 220px; flex-shrink: 0;">
+        <a href="admin-dashboard.html">📊 Dashboard</a>
+        <a href="manage-donors.html" class="active">👥 Manage Donors</a>
+        <a href="manage-requests.html">🩸 Manage Requests</a>
+        <a href="send-notification.html">📢 Send Notification</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1 main-content">
+
+        <h4 class="mb-4">👥 Manage Donors</h4>
+
+        <!-- STATS ROW -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #c0392b;">
+                    <h3 id="totalCount">0</h3>
+                    <p class="mb-0 text-muted">Total Donors</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #27ae60;">
+                    <h3 id="activeCount">0</h3>
+                    <p class="mb-0 text-muted">Active Donors</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #e74c3c;">
+                    <h3 id="blockedCount">0</h3>
+                    <p class="mb-0 text-muted">Blocked Donors</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-2">
+                <div class="card p-3 shadow text-center"
+                    style="border-left: 4px solid #2980b9;">
+                    <h3 id="shownCount">0</h3>
+                    <p class="mb-0 text-muted">Showing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH & FILTER -->
+        <div class="card p-4 shadow mb-4">
+            <h5 class="section-title">🔍 Search & Filter</h5>
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label>Blood Group</label>
+                    <select class="form-control" id="filterBloodGroup">
+                        <option value="">All</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label>Department</label>
+                    <input type="text" class="form-control"
+                        id="filterDepartment" placeholder="e.g. CSE">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label>Status</label>
+                    <select class="form-control" id="filterStatus">
+                        <option value="">All</option>
+                        <option value="1">Active</option>
+                        <option value="0">Blocked</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2 d-flex align-items-end">
+                    <button class="btn btn-danger w-100"
+                        onclick="searchDonors()">
+                        🔍 Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONORS TABLE -->
+        <div class="card p-4 shadow">
+            <h5 class="section-title">👥 Donor List</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Blood Group</th>
+                            <th>Department</th>
+                            <th>Last Donation</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donorTableBody">
+                        <tr>
+                            <td colspan="9" class="text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- DONOR DETAIL MODAL -->
+<div class="modal fade" id="donorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#c0392b; color:white;">
+                <h5 class="modal-title">👤 Donor Details</h5>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Check admin login
+const adminToken = localStorage.getItem("adminToken");
+if (!adminToken) {
+    alert("Please login as admin!");
+    window.location.href = "admin-login.html";
+}
+
+document.getElementById("adminNameNav").textContent =
+    localStorage.getItem("adminName") || "Admin";
+
+let allDonors = [];
+
+// LOAD ALL DONORS
+async function loadDonors() {
+    try {
+        const response = await fetch("https://blood-bank-backend-xwde.onrender.com/api/admin/donors", {
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const donors = await response.json();
+        allDonors = donors;
+        displayDonors(donors);
+        updateCounts(donors);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// SEARCH DONORS
+async function searchDonors() {
+    const blood_group = document.getElementById("filterBloodGroup").value;
+    const department = document.getElementById("filterDepartment").value;
+    const status = document.getElementById("filterStatus").value;
+
+    let url = "https://blood-bank-backend-xwde.onrender.com/api/admin/donors/search?";
+    if (blood_group) url += "blood_group=" + encodeURIComponent(blood_group) + "&";
+    if (department) url += "department=" + encodeURIComponent(department) + "&";
+    if (status !== "") url += "status=" + status;
+
+    try {
+        const response = await fetch(url, {
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const donors = await response.json();
+        displayDonors(donors);
+        document.getElementById("shownCount").textContent = donors.length;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// UPDATE COUNTS
+function updateCounts(donors) {
+    const active = donors.filter(d => d.availability_status == 1).length;
+    const blocked = donors.filter(d => d.availability_status == 0).length;
+    document.getElementById("totalCount").textContent = donors.length;
+    document.getElementById("activeCount").textContent = active;
+    document.getElementById("blockedCount").textContent = blocked;
+    document.getElementById("shownCount").textContent = donors.length;
+}
+
+// DISPLAY DONORS
+function displayDonors(donors) {
+    const tbody = document.getElementById("donorTableBody");
+
+    if (donors.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    No donors found
+                </td>
+            </tr>`;
+        return;
+    }
+
+    tbody.innerHTML = donors.map((donor, index) => {
+        const lastDonation = donor.last_donation_date ?
+            new Date(donor.last_donation_date).toLocaleDateString() : "Never";
+
+        const statusBadge = donor.availability_status == 1 ?
+            '<span class="badge bg-success">Active</span>' :
+            '<span class="badge bg-danger">Blocked</span>';
+
+        const blockBtn = donor.availability_status == 1 ?
+            `<button class="btn btn-sm btn-warning me-1"
+                onclick="blockDonor(${donor.donor_id}, 0)">
+                🚫 Block
+            </button>` :
+            `<button class="btn btn-sm btn-success me-1"
+                onclick="blockDonor(${donor.donor_id}, 1)">
+                ✅ Unblock
+            </button>`;
+
+        return `
+        <tr>
+            <td>${index + 1}</td>
+            <td>
+                <a href="#" onclick="viewDonor(${donor.donor_id})"
+                    style="color:#c0392b;">
+                    ${donor.name}
+                </a>
+            </td>
+            <td>${donor.email}</td>
+            <td>${donor.phone}</td>
+            <td>
+                <span class="blood-badge">${donor.blood_group}</span>
+            </td>
+            <td>${donor.department || "N/A"}</td>
+            <td>${lastDonation}</td>
+            <td>${statusBadge}</td>
+            <td>
+                ${blockBtn}
+                <button class="btn btn-sm btn-danger"
+                    onclick="deleteDonor(${donor.donor_id})">
+                    🗑️
+                </button>
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+// VIEW DONOR DETAILS
+function viewDonor(id) {
+    const donor = allDonors.find(d => d.donor_id === id);
+    if (!donor) return;
+
+    const lastDonation = donor.last_donation_date ?
+        new Date(donor.last_donation_date).toLocaleDateString() : "Never";
+
+    document.getElementById("modalBody").innerHTML = `
+        <table class="table">
+            <tr>
+                <td><strong>Name</strong></td>
+                <td>${donor.name}</td>
+            </tr>
+            <tr>
+                <td><strong>Email</strong></td>
+                <td>${donor.email}</td>
+            </tr>
+            <tr>
+                <td><strong>Phone</strong></td>
+                <td>${donor.phone}</td>
+            </tr>
+            <tr>
+                <td><strong>Blood Group</strong></td>
+                <td>
+                    <span class="blood-badge">${donor.blood_group}</span>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Department</strong></td>
+                <td>${donor.department || "N/A"}</td>
+            </tr>
+            <tr>
+                <td><strong>Last Donation</strong></td>
+                <td>${lastDonation}</td>
+            </tr>
+            <tr>
+                <td><strong>Status</strong></td>
+                <td>${donor.availability_status == 1 ?
+                    '<span class="badge bg-success">Active</span>' :
+                    '<span class="badge bg-danger">Blocked</span>'}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Joined</strong></td>
+                <td>${new Date(donor.created_at).toLocaleDateString()}</td>
+            </tr>
+        </table>`;
+
+    new bootstrap.Modal(document.getElementById("donorModal")).show();
+}
+
+// BLOCK / UNBLOCK DONOR
+async function blockDonor(id, status) {
+    const action = status == 1 ? "unblock" : "block";
+    if (!confirm("Are you sure you want to " + action + " this donor?")) return;
+
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/admin/donor/block/" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + adminToken
+            },
+            body: JSON.stringify({ status })
+        });
+        const data = await response.json();
+        alert(data.message);
+        loadDonors();
+    } catch (error) {
+        alert("Error updating donor");
+    }
+}
+
+// DELETE DONOR
+async function deleteDonor(id) {
+    if (!confirm("Are you sure you want to DELETE this donor? This cannot be undone!"))
+        return;
+
+    try {
+        const response = await fetch(
+            "https://blood-bank-backend-xwde.onrender.com/api/admin/donor/delete/" + id, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + adminToken }
+        });
+        const data = await response.json();
+        alert(data.message);
+        loadDonors();
+    } catch (error) {
+        alert("Error deleting donor");
+    }
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.clear();
+    window.location.href = "admin-login.html";
+});
+
+// Load on start
+loadDonors();
+</script>
+
+</body>
+</html>

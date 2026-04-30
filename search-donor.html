@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Donors - UBBDMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .navbar-brand { color: white !important; font-weight: bold; }
+        .donor-card {
+            border-left: 4px solid #c0392b;
+            transition: transform 0.2s;
+        }
+        .donor-card:hover {
+            transform: translateY(-3px);
+        }
+        .blood-badge {
+            background: #c0392b;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .eligible { color: green; }
+        .not-eligible { color: red; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg" style="background-color: #c0392b;">
+    <div class="container">
+        <a class="navbar-brand" href="#">🩸 UBBDMS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="donor-dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="search-donor.html">Search Donors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="blood-request.html">Blood Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="donation-history.html">My History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#" id="logoutBtn">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="container mt-4">
+    <h3 class="mb-4" style="color:#c0392b;">🔍 Search Blood Donors</h3>
+
+    <!-- Search Filters -->
+    <div class="card p-4 shadow mb-4">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Blood Group</label>
+                <select class="form-control" id="searchBloodGroup">
+                    <option value="">All Blood Groups</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Department</label>
+                <input type="text" class="form-control" id="searchDepartment" 
+                       placeholder="e.g. CSE, EEE...">
+            </div>
+            <div class="col-md-4 mb-3 d-flex align-items-end">
+                <button class="btn btn-danger w-100" onclick="searchDonors()">
+                    🔍 Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mb-3">
+        <span id="resultCount" class="text-muted"></span>
+    </div>
+
+    <!-- Results -->
+    <div id="donorResults" class="row">
+        <div class="col-12 text-center text-muted mt-5">
+            <h5>Search for donors by blood group or department</h5>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Check login
+const token = localStorage.getItem("token");
+if (!token) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+}
+
+// Search donors
+async function searchDonors() {
+    const blood_group = document.getElementById("searchBloodGroup").value;
+    const department = document.getElementById("searchDepartment").value;
+
+    let url = "https://blood-bank-backend-xwde.onrender.com/api/donor/search?";
+    if (blood_group) url += "blood_group=" + encodeURIComponent(blood_group) + "&";
+    if (department) url += "department=" + encodeURIComponent(department);
+
+    try {
+        const response = await fetch(url, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        const donors = await response.json();
+
+        displayDonors(donors);
+
+    } catch (error) {
+        console.error(error);
+        alert("Error searching donors");
+    }
+}
+
+// Display donors
+function displayDonors(donors) {
+    const container = document.getElementById("donorResults");
+    const countEl = document.getElementById("resultCount");
+
+    if (donors.length === 0) {
+        countEl.textContent = "No donors found";
+        container.innerHTML = `
+            <div class="col-12 text-center mt-4">
+                <h5 class="text-muted">No donors found for your search</h5>
+            </div>`;
+        return;
+    }
+
+    countEl.textContent = donors.length + " donor(s) found";
+
+    container.innerHTML = donors.map(donor => {
+        // Eligibility check
+        let eligibilityHTML = "";
+        if (donor.last_donation_date) {
+            const lastDate = new Date(donor.last_donation_date);
+            const today = new Date();
+            const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+            if (diffDays >= 90) {
+                eligibilityHTML = '<span class="eligible">✅ Eligible</span>';
+            } else {
+                eligibilityHTML = '<span class="not-eligible">❌ Not eligible yet</span>';
+            }
+        } else {
+            eligibilityHTML = '<span class="eligible">✅ Eligible</span>';
+        }
+
+        return `
+        <div class="col-md-6 mb-3">
+            <div class="card p-3 shadow donor-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="blood-badge">${donor.blood_group}</div>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">${donor.name}</h5>
+                        <p class="mb-1 text-muted">
+                            📚 ${donor.department || "N/A"}
+                        </p>
+                        <p class="mb-1">
+                            📞 ${donor.phone}
+                        </p>
+                        <p class="mb-0">${eligibilityHTML}</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join("");
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    localStorage.clear();
+    window.location.href = "login.html";
+});
+
+// Load all donors on page load
+searchDonors();
+</script>
+
+</body>
+</html>

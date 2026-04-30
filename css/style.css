@@ -1,0 +1,561 @@
+/* ==========================================
+   UBBDMS - Modern CSS (Bootstrap Enhanced)
+   ========================================== */
+
+/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ROOT VARIABLES */
+:root {
+    --primary: #c0392b;
+    --primary-dark: #922b21;
+    --primary-light: #e74c3c;
+    --secondary: #2c3e50;
+    --accent: #f39c12;
+    --success: #27ae60;
+    --light-bg: #f8f9fa;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    --hover-shadow: 0 20px 40px rgba(192,57,43,0.15);
+    --border-radius: 15px;
+    --transition: all 0.3s ease;
+}
+
+/* BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f2f5;
+    color: #2c3e50;
+}
+
+/* ==========================================
+   NAVBAR
+   ========================================== */
+.navbar {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    box-shadow: 0 4px 20px rgba(192,57,43,0.3);
+    padding: 12px 0;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 800 !important;
+    font-size: 1.4rem !important;
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    padding: 8px 15px !important;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: white !important;
+    background: rgba(255,255,255,0.15);
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+.btn {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    border-radius: 10px !important;
+    padding: 10px 25px;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, var(--primary-dark), #7b241c) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(192,57,43,0.4);
+}
+
+.btn-outline-danger {
+    border: 2px solid var(--primary) !important;
+    color: var(--primary) !important;
+    background: transparent !important;
+}
+
+.btn-outline-danger:hover {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(192,57,43,0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #27ae60, #1e8449) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(39,174,96,0.3);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(39,174,96,0.4);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f39c12, #d68910) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.btn-dark {
+    background: linear-gradient(135deg, #2c3e50, #1a252f) !important;
+    border: none !important;
+}
+
+/* ==========================================
+   CARDS
+   ========================================== */
+.card {
+    border: none !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--hover-shadow) !important;
+}
+
+/* ==========================================
+   FORM CONTROLS
+   ========================================== */
+.form-control {
+    font-family: 'Poppins', sans-serif;
+    border: 2px solid #e9ecef !important;
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    background: #f8f9fa;
+}
+
+.form-control:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(192,57,43,0.1) !important;
+    background: white;
+}
+
+.form-select {
+    font-family: 'Poppins', sans-serif;
+    border: 2px solid #e9ecef !important;
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+    transition: var(--transition);
+}
+
+.form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(192,57,43,0.1) !important;
+}
+
+label {
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* ==========================================
+   PAGE HEADER
+   ========================================== */
+.page-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    font-weight: 800;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.page-header p {
+    opacity: 0.9;
+    margin: 5px 0 0;
+}
+
+/* ==========================================
+   STAT CARDS
+   ========================================== */
+.stat-card-modern {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(var(--primary), var(--primary-dark));
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.stat-card-modern .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.stat-card-modern .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.stat-card-modern .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ==========================================
+   BLOOD BADGE
+   ========================================== */
+.blood-badge {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+}
+
+/* ==========================================
+   TABLE
+   ========================================== */
+.table {
+    font-family: 'Poppins', sans-serif;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    font-weight: 600;
+    border: none !important;
+    padding: 15px;
+}
+
+.table tbody tr {
+    transition: var(--transition);
+}
+
+.table tbody tr:hover {
+    background: rgba(192,57,43,0.05);
+}
+
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-color: #f0f0f0 !important;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* ==========================================
+   SIDEBAR (Admin)
+   ========================================== */
+.sidebar {
+    background: linear-gradient(180deg, #1a252f, #2c3e50) !important;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+}
+
+.sidebar a {
+    color: #bdc3c7 !important;
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px !important;
+    text-decoration: none;
+    border-radius: 10px !important;
+    margin: 4px 10px !important;
+    font-weight: 500;
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+
+.sidebar a:hover {
+    background: rgba(192,57,43,0.2) !important;
+    color: white !important;
+    transform: translateX(5px);
+}
+
+.sidebar a.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+}
+
+/* ==========================================
+   ALERTS
+   ========================================== */
+.alert {
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    padding: 15px 20px;
+}
+
+.alert-success {
+    background: rgba(39,174,96,0.1);
+    color: #1e8449;
+    border-left: 4px solid #27ae60;
+}
+
+.alert-danger {
+    background: rgba(192,57,43,0.1);
+    color: var(--primary-dark);
+    border-left: 4px solid var(--primary);
+}
+
+.alert-info {
+    background: rgba(52,152,219,0.1);
+    color: #1a5276;
+    border-left: 4px solid #3498db;
+}
+
+.alert-warning {
+    background: rgba(243,156,18,0.1);
+    color: #7d6608;
+    border-left: 4px solid #f39c12;
+}
+
+/* ==========================================
+   MODALS
+   ========================================== */
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    padding: 20px 25px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+/* ==========================================
+   PROGRESS BAR
+   ========================================== */
+.progress {
+    border-radius: 10px;
+    background: #f0f0f0;
+    height: 8px !important;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 10px;
+}
+
+/* ==========================================
+   SECTION TITLE
+   ========================================== */
+.section-title {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding-bottom: 12px;
+    margin-bottom: 25px;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(135deg, var(--primary), var(--primary-dark)) 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ==========================================
+   DONOR CARDS
+   ========================================== */
+.donor-card {
+    border-left: 4px solid var(--primary) !important;
+    transition: var(--transition);
+    background: white;
+    border-radius: var(--border-radius) !important;
+}
+
+.donor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow) !important;
+}
+
+/* ==========================================
+   REQUEST CARDS
+   ========================================== */
+.request-card {
+    border-left: 4px solid var(--primary) !important;
+    transition: var(--transition);
+    background: white;
+    border-radius: var(--border-radius) !important;
+}
+
+.request-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow) !important;
+}
+
+/* ==========================================
+   NOTIFICATION CARDS
+   ========================================== */
+.notif-unread {
+    background: linear-gradient(135deg, #fff5f5, #fff) !important;
+    border-left: 4px solid var(--primary) !important;
+}
+
+.notif-read {
+    background: white !important;
+    border-left: 4px solid #ddd !important;
+    opacity: 0.8;
+}
+
+/* ==========================================
+   HISTORY CARDS
+   ========================================== */
+.history-card {
+    border-left: 4px solid var(--primary) !important;
+    transition: var(--transition);
+}
+
+.history-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--hover-shadow) !important;
+}
+
+/* ==========================================
+   ELIGIBILITY
+   ========================================== */
+.eligible {
+    color: var(--success);
+    font-weight: 700;
+}
+
+.not-eligible {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.footer {
+    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    color: #bdc3c7;
+    padding: 50px 0 20px;
+}
+
+.footer h5 {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.footer a {
+    color: #bdc3c7;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 8px;
+    transition: var(--transition);
+}
+
+.footer a:hover {
+    color: var(--primary);
+    transform: translateX(5px);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 30px;
+    padding-top: 20px;
+    text-align: center;
+    color: #7f8c8d;
+}
+
+/* ==========================================
+   SCROLLBAR
+   ========================================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--primary), var(--primary-dark));
+    border-radius: 10px;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.4s ease;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    .main-content {
+        padding: 15px !important;
+    }
+    .stat-card-modern .stat-number {
+        font-size: 1.5rem;
+    }
+}
